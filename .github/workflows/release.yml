@@ -37,12 +37,21 @@ jobs:
           CURRENT_VERSION=$(poetry version --short)
           echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Check if any tags exist
+        id: tags_exist
+        run: |
+          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get last released version
         id: last_version
+        if: steps.tags_exist.outputs.exists == 'true'
         run: |
-          # Get the latest tag, fallback to "v1.0.0" if no tags exist
-          LAST_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-          # Remove 'v' prefix if present
+          # Get the latest tag and remove 'v' prefix if present
+          LAST_VERSION=$(git describe --tags --abbrev=0)
           LAST_VERSION=${LAST_VERSION#v}
           echo "last_version=$LAST_VERSION" >> "$GITHUB_OUTPUT"
 
@@ -50,11 +59,20 @@ jobs:
         id: version_check
         run: |
           CURRENT="${{ steps.current_version.outputs.current_version }}"
-          LAST="${{ steps.last_version.outputs.last_version }}"
-          if [ "$CURRENT" != "$LAST" ]; then
+          if [ "${{ steps.tags_exist.outputs.exists }}" == "false" ]; then
+            # First release - always create it
             echo "version_changed=true" >> "$GITHUB_OUTPUT"
+            echo "is_first_release=true" >> "$GITHUB_OUTPUT"
           else
-            echo "version_changed=false" >> "$GITHUB_OUTPUT"
+            # Compare with last version
+            LAST="${{ steps.last_version.outputs.last_version }}"
+            if [ "$CURRENT" != "$LAST" ]; then
+              echo "version_changed=true" >> "$GITHUB_OUTPUT"
+              echo "is_first_release=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "version_changed=false" >> "$GITHUB_OUTPUT"
+              echo "is_first_release=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Determine tag
@@ -88,6 +106,15 @@ jobs:
               ref: `refs/tags/${tag}`,
               sha
             });
+
+      - name: Log release info
+        if: steps.version_check.outputs.version_changed == 'true'
+        run: |
+          if [ "${{ steps.version_check.outputs.is_first_release }}" == "true" ]; then
+            echo "🎉 Creating first release: ${{ steps.tag.outputs.tag }}"
+          else
+            echo "📦 Creating new release: ${{ steps.tag.outputs.tag }}"
+          fi
 
       - name: Create/Update GitHub Release
         if: steps.version_check.outputs.version_changed == 'true'
