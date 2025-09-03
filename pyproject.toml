@@ -1,0 +1,83 @@
+[tool.poetry]
+name = "trim-spaces-in-paths"
+version = "1.0.0"
+
+description = "A pre-commit hook that auto-fixes file and folder names with unwanted spaces"
+authors = ["Leonardo Rivera <leonardo@example.com>"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/leodrivera/pre-commit-trim-spaces-in-paths"
+repository = "https://github.com/leodrivera/pre-commit-trim-spaces-in-paths"
+keywords = ["pre-commit", "git", "file-renaming", "spaces", "normalization"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+pytest-cov = "^4.0"
+ruff = "^0.5.0"
+pre-commit = "^4.0.0"
+
+[tool.poetry.scripts]
+trim-spaces-in-paths = "trim_spaces_in_paths.trim_spaces_in_paths:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # flake8-unused-arguments
+    "ARG",
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--cov=trim_spaces_in_paths",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+]
+
+[tool.coverage.run]
+omit = [
+    "trim_spaces_in_paths/__init__.py",
+    "/tmp/*",
+    "/private/var/*",
+]

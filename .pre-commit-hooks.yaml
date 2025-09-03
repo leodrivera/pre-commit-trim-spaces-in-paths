@@ -1,0 +1,6 @@
+- id: trim-spaces-in-paths
+  name: Trim spaces in file and directory names
+  entry: trim-spaces-in-paths
+  language: python
+  description: Auto-fixes file and folder names with unwanted spaces
+  args: [--internal-style=none]
