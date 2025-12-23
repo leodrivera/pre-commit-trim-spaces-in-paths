@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "trim-spaces-in-paths"
-version = "1.0.0"
+version = "1.0.1"
 
 description = "A pre-commit hook that auto-fixes file and folder names with unwanted spaces"
 authors = ["Leonardo Rivera <leonardo@example.com>"]
@@ -31,6 +31,7 @@ pytest = "^7.0"
 pytest-cov = "^4.0"
 ruff = "^0.5.0"
 pre-commit = "^4.0.0"
+mypy = "^1.0"
 
 [tool.poetry.scripts]
 trim-spaces-in-paths = "trim_spaces_in_paths.trim_spaces_in_paths:main"
@@ -81,3 +82,9 @@ omit = [
     "/tmp/*",
     "/private/var/*",
 ]
+
+[tool.mypy]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

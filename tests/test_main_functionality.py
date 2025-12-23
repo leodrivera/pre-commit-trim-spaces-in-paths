@@ -1,6 +1,7 @@
 """Tests for main() function functionality."""
 
 import sys
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -11,7 +12,9 @@ from trim_spaces_in_paths import trim_spaces_in_paths as mod
 class TestMainErrorHandling:
     """Test main() error handling paths."""
 
-    def test_main_normalize_path_error(self, monkeypatch, tmp_path):
+    def test_main_normalize_path_error(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() when normalize_path returns an error."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -21,7 +24,9 @@ class TestMainErrorHandling:
             result = mod.main(["script", "  "])  # Path that becomes empty
             assert result == 1  # Should return error code
 
-    def test_main_git_mv_failure(self, monkeypatch, tmp_path):
+    def test_main_git_mv_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() when git_mv fails."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -35,7 +40,9 @@ class TestMainErrorHandling:
 class TestMainIntegration:
     """Integration tests for main() function scenarios."""
 
-    def test_main_success_with_changes(self, monkeypatch, tmp_path):
+    def test_main_success_with_changes(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() success path with actual changes."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -49,7 +56,9 @@ class TestMainIntegration:
             # Check that success message was printed
             mock_stdout.write.assert_called()
 
-    def test_main_success_no_changes(self, monkeypatch, tmp_path):
+    def test_main_success_no_changes(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() success path with no changes needed."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -58,7 +67,9 @@ class TestMainIntegration:
         result = mod.main(["script", "already_normal.txt"])
         assert result == 0  # Should return success with no changes
 
-    def test_main_conflict_detection(self, monkeypatch, tmp_path):
+    def test_main_conflict_detection(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() conflict detection between multiple paths."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -69,7 +80,9 @@ class TestMainIntegration:
             # These don't actually conflict with "none" style, so they succeed
             assert result == 3  # Should return success with changes
 
-    def test_main_conflict_detection_different_paths(self, monkeypatch, tmp_path):
+    def test_main_conflict_detection_different_paths(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() conflict detection with different paths."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -80,7 +93,9 @@ class TestMainIntegration:
             # These don't actually conflict with "none" style, so they succeed
             assert result == 3  # Should return success with changes
 
-    def test_main_actual_conflict_detection(self, monkeypatch, tmp_path):
+    def test_main_actual_conflict_detection(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test main() with actual conflict."""
         # Patch repo_root to return our temp directory
         monkeypatch.setattr(mod, "repo_root", lambda: tmp_path)
@@ -96,7 +111,7 @@ class TestMainIntegration:
 class TestDirectExecution:
     """Test direct script execution."""
 
-    def test_script_direct_execution_calls_main(self):
+    def test_script_direct_execution_calls_main(self) -> None:
         """Test that direct execution calls main with sys.argv."""
         with patch.object(mod, "main") as mock_main:
             mock_main.return_value = 0
@@ -109,7 +124,7 @@ class TestDirectExecution:
                 assert exc_info.value.code == 0
                 mock_main.assert_called_once_with(sys.argv)
 
-    def test_script_direct_execution_passes_exit_code(self):
+    def test_script_direct_execution_passes_exit_code(self) -> None:
         """Test that direct execution passes main's return code to sys.exit."""
         with patch.object(mod, "main") as mock_main:
             mock_main.return_value = 3
@@ -126,7 +141,9 @@ class TestDirectExecution:
 class TestPreCommitHookEntryPoint:
     """Test pre-commit hook entry point functionality."""
 
-    def test_precommit_hook_entry_point(self, monkeypatch, tmp_path):
+    def test_precommit_hook_entry_point(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test that the pre-commit hook entry point works correctly."""
         # Test the exact entry point that pre-commit uses
         from trim_spaces_in_paths.trim_spaces_in_paths import main
@@ -142,7 +159,9 @@ class TestPreCommitHookEntryPoint:
         result = main(["script", "normal_file.txt"])
         assert result == 0
 
-    def test_precommit_hook_entry_point_with_changes(self, monkeypatch, tmp_path):
+    def test_precommit_hook_entry_point_with_changes(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test pre-commit hook entry point with files that need changes."""
         from trim_spaces_in_paths.trim_spaces_in_paths import main
 
@@ -159,7 +178,9 @@ class TestPreCommitHookEntryPoint:
             # Check that success message was printed
             mock_stdout.write.assert_called()
 
-    def test_precommit_hook_entry_point_with_errors(self, monkeypatch, tmp_path):
+    def test_precommit_hook_entry_point_with_errors(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Test pre-commit hook entry point with errors."""
         from trim_spaces_in_paths.trim_spaces_in_paths import main
 

@@ -10,7 +10,7 @@ from trim_spaces_in_paths import trim_spaces_in_paths as mod
 class TestRepoRootError:
     """Test repo_root() error handling."""
 
-    def test_repo_root_not_git_repo(self):
+    def test_repo_root_not_git_repo(self) -> None:
         """Test repo_root() when not in a git repository."""
         with patch.object(mod, "run") as mock_run:
             # Mock git command failure
@@ -24,7 +24,7 @@ class TestRepoRootError:
 
             assert exc_info.value.code == 2
 
-    def test_repo_root_git_error_no_stderr(self):
+    def test_repo_root_git_error_no_stderr(self) -> None:
         """Test repo_root() when git command fails with no stderr."""
         with patch.object(mod, "run") as mock_run:
             # Mock git command failure with no stderr

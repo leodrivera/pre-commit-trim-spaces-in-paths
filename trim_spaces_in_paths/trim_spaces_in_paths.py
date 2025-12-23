@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 
-def run(cmd: list[str]) -> subprocess.CompletedProcess:
+def run(cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
     return subprocess.run(cmd, capture_output=True, check=False)
 
 
@@ -100,7 +100,7 @@ def parse_args(argv: list[str]) -> tuple[str, list[str]]:
     return internal_style, files
 
 
-def main(argv: list[str] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     if argv is None:
         argv = sys.argv
     _ = repo_root()  # validates we're in a repo
@@ -108,7 +108,7 @@ def main(argv: list[str] = None) -> int:
 
     plan: list[tuple[str, str]] = []
     errors: list[str] = []
-    desired_targets = {}
+    desired_targets: dict[str, str] = {}
 
     for p in inputs:
         posix = Path(p).as_posix()
@@ -116,6 +116,7 @@ def main(argv: list[str] = None) -> int:
         if err:
             errors.append(f"'{posix}': {err}")
             continue
+        assert dst is not None  # If err is None, dst must be a string
         if posix == dst:
             continue
         if dst in desired_targets and desired_targets[dst] != posix:

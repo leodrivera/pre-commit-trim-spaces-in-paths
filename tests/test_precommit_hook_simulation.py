@@ -1,6 +1,9 @@
 """Test pre-commit hook simulation."""
 
 import platform
+import subprocess
+from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
@@ -9,8 +12,11 @@ class TestPreCommitHookSimulation:
     """Test pre-commit hook simulation from remote repository."""
 
     def test_precommit_hook_simulation_no_files(
-        self, git_repo, project_root, run_command
-    ):
+        self,
+        git_repo: Path,
+        project_root: Path,
+        run_command: Callable[..., subprocess.CompletedProcess[str]],
+    ) -> None:
         """Test pre-commit hook simulation with no files to check."""
         # Create a simple .pre-commit-config.yaml that uses our repo
         config_content = f"""repos:
@@ -38,8 +44,11 @@ class TestPreCommitHookSimulation:
         reason="Cross-mount path issues on Windows CI",
     )
     def test_precommit_hook_simulation_with_files(
-        self, git_repo, project_root, run_command
-    ):
+        self,
+        git_repo: Path,
+        project_root: Path,
+        run_command: Callable[..., subprocess.CompletedProcess[str]],
+    ) -> None:
         """Test pre-commit hook simulation with files that need changes."""
         # Create a file with spaces in the name
         test_file = git_repo / "  test  file  .txt"
@@ -83,8 +92,11 @@ class TestPreCommitHookSimulation:
         reason="Cross-mount path issues on Windows CI",
     )
     def test_precommit_hook_simulation_multiple_files(
-        self, git_repo, project_root, run_command
-    ):
+        self,
+        git_repo: Path,
+        project_root: Path,
+        run_command: Callable[..., subprocess.CompletedProcess[str]],
+    ) -> None:
         """Test pre-commit hook simulation with multiple files."""
         # Create multiple files with spaces
         file1 = git_repo / "  file1  .txt"

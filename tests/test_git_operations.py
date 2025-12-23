@@ -1,12 +1,17 @@
 import os
+import subprocess
 import sys
+from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
 from trim_spaces_in_paths import trim_spaces_in_paths as mod
 
 
-def test_is_tracked_file_exists(git_repo, run_command):
+def test_is_tracked_file_exists(
+    git_repo: Path, run_command: Callable[..., subprocess.CompletedProcess[str]]
+) -> None:
     """Test is_tracked() with a file that exists and is tracked by git."""
     # Create and add a file
     test_file = git_repo / "test.txt"
@@ -23,7 +28,7 @@ def test_is_tracked_file_exists(git_repo, run_command):
         os.chdir(original_cwd)
 
 
-def test_is_tracked_file_not_tracked(git_repo):
+def test_is_tracked_file_not_tracked(git_repo: Path) -> None:
     """Test is_tracked() with a file that exists but is not tracked by git."""
     # Create a file but don't add it
     test_file = git_repo / "test.txt"
@@ -39,7 +44,7 @@ def test_is_tracked_file_not_tracked(git_repo):
         os.chdir(original_cwd)
 
 
-def test_is_tracked_file_not_exists(git_repo):
+def test_is_tracked_file_not_exists(git_repo: Path) -> None:
     """Test is_tracked() with a file that doesn't exist."""
     # Test is_tracked with non-existent file - need to change to the git repo directory first
     original_cwd = os.getcwd()
@@ -51,7 +56,7 @@ def test_is_tracked_file_not_exists(git_repo):
         os.chdir(original_cwd)
 
 
-def test_ensure_parent_creates_directories(tmp_path):
+def test_ensure_parent_creates_directories(tmp_path: Path) -> None:
     """Test ensure_parent() creates parent directories."""
     # Test ensure_parent with nested path
     f = mod.ensure_parent
@@ -63,7 +68,7 @@ def test_ensure_parent_creates_directories(tmp_path):
     assert (tmp_path / "dir1" / "dir2").exists()
 
 
-def test_ensure_parent_existing_directories(tmp_path):
+def test_ensure_parent_existing_directories(tmp_path: Path) -> None:
     """Test ensure_parent() with existing parent directories."""
     # Create parent directories manually
     (tmp_path / "existing_dir").mkdir()
@@ -81,7 +86,7 @@ def test_ensure_parent_existing_directories(tmp_path):
     sys.platform == "Windows",
     reason="Filesystem spacing edge-cases not portable on Windows",
 )
-def test_git_mv_same_source_destination(git_repo):
+def test_git_mv_same_source_destination(git_repo: Path) -> None:
     """Test git_mv() with same source and destination (should return False)."""
     # Create a file
     test_file = git_repo / "test.txt"
@@ -102,7 +107,9 @@ def test_git_mv_same_source_destination(git_repo):
     sys.platform == "Windows",
     reason="Filesystem spacing edge-cases not portable on Windows",
 )
-def test_git_mv_successful_rename(git_repo, run_command):
+def test_git_mv_successful_rename(
+    git_repo: Path, run_command: Callable[..., subprocess.CompletedProcess[str]]
+) -> None:
     """Test git_mv() with successful file rename."""
     # Create and add a file
     test_file = git_repo / "test.txt"
@@ -129,7 +136,7 @@ def test_git_mv_successful_rename(git_repo, run_command):
     sys.platform == "Windows",
     reason="Filesystem spacing edge-cases not portable on Windows",
 )
-def test_git_mv_nonexistent_source(git_repo):
+def test_git_mv_nonexistent_source(git_repo: Path) -> None:
     """Test git_mv() with non-existent source file."""
     # Test git_mv with non-existent source - need to change to the git repo directory first
     original_cwd = os.getcwd()
@@ -148,7 +155,7 @@ def test_git_mv_nonexistent_source(git_repo):
 class TestGitMvErrorHandling:
     """Test git_mv error handling and file operations."""
 
-    def test_git_mv_file_not_found(self):
+    def test_git_mv_file_not_found(self) -> None:
         """Test git_mv when source file doesn't exist (FileNotFoundError)."""
         from unittest.mock import Mock, patch
 
@@ -160,7 +167,7 @@ class TestGitMvErrorHandling:
                 result = mod.git_mv("nonexistent.txt", "new.txt")
                 assert result is False
 
-    def test_git_mv_os_replace_exception(self):
+    def test_git_mv_os_replace_exception(self) -> None:
         """Test git_mv when os.replace raises an exception."""
         from unittest.mock import Mock, patch
 
@@ -177,7 +184,7 @@ class TestGitMvErrorHandling:
                 # Check that error message was printed
                 mock_stderr.write.assert_called()
 
-    def test_git_mv_successful_os_replace(self):
+    def test_git_mv_successful_os_replace(self) -> None:
         """Test git_mv when git mv fails but os.replace succeeds."""
         from unittest.mock import Mock, patch
 
@@ -195,7 +202,7 @@ class TestGitMvErrorHandling:
                 # Should call git add and git rm
                 assert mock_run.call_count >= 3
 
-    def test_git_mv_successful_os_replace_untracked_source(self):
+    def test_git_mv_successful_os_replace_untracked_source(self) -> None:
         """Test git_mv when git mv fails, os.replace succeeds, and source is untracked."""
         from unittest.mock import Mock, patch
 
@@ -213,7 +220,7 @@ class TestGitMvErrorHandling:
                 # Should call git add but not git rm (since source is untracked)
                 assert mock_run.call_count >= 2
 
-    def test_git_mv_same_source_destination_mocked(self):
+    def test_git_mv_same_source_destination_mocked(self) -> None:
         """Test git_mv when source equals destination (mocked version)."""
         result = mod.git_mv("same.txt", "same.txt")
         assert result is False

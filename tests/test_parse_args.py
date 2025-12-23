@@ -3,7 +3,7 @@ import pytest
 from trim_spaces_in_paths import trim_spaces_in_paths as mod
 
 
-def test_parse_args_default():
+def test_parse_args_default() -> None:
     """Test default argument parsing with no options."""
     f = mod.parse_args
     internal_style, files = f(["script.py"])
@@ -11,7 +11,7 @@ def test_parse_args_default():
     assert files == []
 
 
-def test_parse_args_with_files():
+def test_parse_args_with_files() -> None:
     """Test argument parsing with file arguments."""
     f = mod.parse_args
     internal_style, files = f(["script.py", "file1.txt", "file2.txt"])
@@ -19,7 +19,7 @@ def test_parse_args_with_files():
     assert files == ["file1.txt", "file2.txt"]
 
 
-def test_parse_args_collapse_style():
+def test_parse_args_collapse_style() -> None:
     """Test argument parsing with collapse internal style."""
     f = mod.parse_args
     internal_style, files = f(["script.py", "--internal-style=collapse", "file.txt"])
@@ -27,7 +27,7 @@ def test_parse_args_collapse_style():
     assert files == ["file.txt"]
 
 
-def test_parse_args_underscore_style():
+def test_parse_args_underscore_style() -> None:
     """Test argument parsing with underscore internal style."""
     f = mod.parse_args
     internal_style, files = f(["script.py", "--internal-style=underscore", "file.txt"])
@@ -35,7 +35,7 @@ def test_parse_args_underscore_style():
     assert files == ["file.txt"]
 
 
-def test_parse_args_remove_style():
+def test_parse_args_remove_style() -> None:
     """Test argument parsing with remove internal style."""
     f = mod.parse_args
     internal_style, files = f(["script.py", "--internal-style=remove", "file.txt"])
@@ -43,7 +43,7 @@ def test_parse_args_remove_style():
     assert files == ["file.txt"]
 
 
-def test_parse_args_multiple_files_with_style():
+def test_parse_args_multiple_files_with_style() -> None:
     """Test argument parsing with multiple files and internal style."""
     f = mod.parse_args
     internal_style, files = f(
@@ -59,7 +59,7 @@ def test_parse_args_multiple_files_with_style():
     assert files == ["file1.txt", "file2.txt", "dir/file3.txt"]
 
 
-def test_parse_args_style_before_files():
+def test_parse_args_style_before_files() -> None:
     """Test argument parsing with style option before files."""
     f = mod.parse_args
     internal_style, files = f(
@@ -69,7 +69,7 @@ def test_parse_args_style_before_files():
     assert files == ["file1.txt", "file2.txt"]
 
 
-def test_parse_args_style_after_files():
+def test_parse_args_style_after_files() -> None:
     """Test argument parsing with style option after files."""
     f = mod.parse_args
     internal_style, files = f(
@@ -79,7 +79,7 @@ def test_parse_args_style_after_files():
     assert files == ["file1.txt", "file2.txt"]
 
 
-def test_parse_args_invalid_style():
+def test_parse_args_invalid_style() -> None:
     """Test argument parsing with invalid internal style (should exit with code 2)."""
     from unittest.mock import patch
 
@@ -94,7 +94,7 @@ def test_parse_args_invalid_style():
         assert "Invalid --internal-style option: invalid" in str(call_args)
 
 
-def test_parse_args_invalid_style_stderr():
+def test_parse_args_invalid_style_stderr() -> None:
     """Test parse_args with invalid internal style using stderr."""
     from unittest.mock import patch
 

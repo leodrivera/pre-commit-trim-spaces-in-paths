@@ -1,11 +1,14 @@
 import platform
 import shutil
+import subprocess
 import sys
+from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
 
-def test_script_is_executable(script_path):
+def test_script_is_executable(script_path: Path) -> None:
     """Test that the script is executable and has correct shebang."""
     # Check that the script file exists
     assert script_path.exists(), f"Script not found at {script_path}"
@@ -22,7 +25,11 @@ def test_script_is_executable(script_path):
         )
 
 
-def test_script_can_be_executed_directly(script_path, project_root, run_command):
+def test_script_can_be_executed_directly(
+    script_path: Path,
+    project_root: Path,
+    run_command: Callable[..., subprocess.CompletedProcess[str]],
+) -> None:
     """Test that the script can be executed directly without python prefix."""
     # This test only works on Unix-like systems
     if platform.system() == "Windows":
@@ -34,7 +41,11 @@ def test_script_can_be_executed_directly(script_path, project_root, run_command)
     assert result.returncode == 0, f"Script execution failed: {result.stderr}"
 
 
-def test_precommit_environment_simulation(script_path, git_repo, run_command):
+def test_precommit_environment_simulation(
+    script_path: Path,
+    git_repo: Path,
+    run_command: Callable[..., subprocess.CompletedProcess[str]],
+) -> None:
     """Test that simulates the pre-commit environment to catch executable issues."""
     # This test simulates how pre-commit calls the script
     if platform.system() == "Windows":
@@ -63,8 +74,10 @@ def test_precommit_environment_simulation(script_path, git_repo, run_command):
     reason="Filesystem spacing edge-cases not portable on Windows",
 )
 def test_rename_with_internal_collapse_and_leading_space(
-    git_repo, script_path, run_command
-):
+    git_repo: Path,
+    script_path: Path,
+    run_command: Callable[..., subprocess.CompletedProcess[str]],
+) -> None:
     # Create a path with leading space in directory and multiple internal spaces in filename
     # e.g., " dir/ my  file .txt" -> "dir/my file .txt"
     (git_repo / " dir").mkdir(parents=True, exist_ok=True)
@@ -99,7 +112,11 @@ def test_rename_with_internal_collapse_and_leading_space(
     platform.system() == "Windows",
     reason="Filesystem spacing edge-cases not portable on Windows",
 )
-def test_conflict_detection_many_to_one(git_repo, script_path, run_command):
+def test_conflict_detection_many_to_one(
+    git_repo: Path,
+    script_path: Path,
+    run_command: Callable[..., subprocess.CompletedProcess[str]],
+) -> None:
     # Two files that would collapse to the same target with collapse mode:
     # "dir/A  file.txt" and "dir/A   file.txt" -> both become "dir/A file.txt"
     (git_repo / "dir").mkdir(parents=True, exist_ok=True)
